@@ -8,9 +8,14 @@ struct Player {
 
 // todo format for ez print
 struct Card {
-    color: Color,
+    suit: Suit,
     name: Name,
-    points: u32    
+}
+
+impl Card {
+    fn new (suit: Suit, name: Name) -> Self {
+        Card { suit, name }
+    }
 }
 
 enum Name {
@@ -26,12 +31,46 @@ enum Name {
     Jack,
     Queen,
     King,
-    Ace,
+    Ace(u8),
 }
 
-enum Color {
-    Red,
-    Black
+impl Name {
+    fn names_iterator () -> std::array::IntoIter<Name, 13_usize> {
+        [
+            Name::Two,
+            Name::Three,
+            Name::Four,
+            Name::Five,
+            Name::Six,
+            Name::Seven,
+            Name::Eight,
+            Name::Nine,
+            Name::Ten,
+            Name::Jack,
+            Name::Queen,
+            Name::King,
+            Name::Ace(1),
+        ].into_iter()
+    }
+}
+
+#[derive(Clone, Copy)]
+enum Suit {
+    Diamonds,
+    Hearts,
+    Clubs,
+    Spades
+}
+
+impl Suit {
+    fn suit_iterator () -> std::array::IntoIter<Suit, 4_usize> {
+        [
+            Suit::Diamonds,
+            Suit::Hearts,
+            Suit::Clubs,
+            Suit::Spades
+        ].into_iter()
+    }
 }
 
 impl Player {
@@ -52,12 +91,22 @@ impl Player {
     }
 }
 
+fn make_deck() -> Vec<Card> {
+    let mut deck = vec![];
+
+    for suit in Suit::suit_iterator() {
+        for name in Name::names_iterator() {
+            deck.push( Card::new(suit, name) );
+        }
+    }
+
+    deck
+    
+}
+
 fn main() {
-
-    let thingy = helpers::user_input(Some("put a thing"));
-    println!("{thingy} is what you just typed");
-
     // start the game (init stuff get players)
+
 
     // enter game loop
     // loop {
