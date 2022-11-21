@@ -6,6 +6,24 @@ struct Player {
     hand: Vec<Card>
 }
 
+impl Player {
+    fn new(name: String) -> Self {
+        Player { name, money: 100, hand: vec![] }
+    }
+
+    fn clear_hand(&mut self) {
+        self.hand = vec![];
+    }
+
+    fn add_card(&mut self, card: Card) {
+        self.hand.push(card);
+    }
+
+    fn add_cards(&mut self, mut cards: Vec<Card>) {
+        self.hand.append(&mut cards);
+    }
+}
+
 // todo format for ez print
 struct Card {
     suit: Suit,
@@ -73,25 +91,7 @@ impl Suit {
     }
 }
 
-impl Player {
-    fn new(name: String) -> Self {
-        Player { name, money: 100, hand: vec![] }
-    }
-
-    fn clear_hand(&mut self) {
-        self.hand = vec![];
-    }
-
-    fn add_card(&mut self, card: Card) {
-        self.hand.push(card);
-    }
-
-    fn add_cards(&mut self, mut cards: Vec<Card>) {
-        self.hand.append(&mut cards);
-    }
-}
-
-fn make_deck() -> Vec<Card> {
+fn make_deck() -> Vec<Card> { // TODO this could be much faster with iter and multithreading
     let mut deck = vec![];
 
     for suit in Suit::suit_iterator() {
@@ -100,12 +100,27 @@ fn make_deck() -> Vec<Card> {
         }
     }
 
-    deck
-    
+    deck    
 }
 
-fn main() {
+fn get_players() -> Vec<Player> {
+    let mut players = vec![];
+
+    loop {
+        let input = helpers::user_input(Some("to add a user, enter a username\nto start, type 's'\n~"));
+
+        if input == "s" {break;}
+
+        players.push( Player::new(input));
+    }
+
+    players
+}
+
+fn main() { // TODO welcome msg
     // start the game (init stuff get players)
+    let _deck = make_deck();
+    let _players = get_players();
 
 
     // enter game loop
