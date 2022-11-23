@@ -1,4 +1,5 @@
-use card_game_rust::helpers;
+use card_game_rust::{helpers, my_random};
+use card_game_rust::deck_trait::IsDeck;
 
 struct Player {
     name: String,
@@ -30,8 +31,8 @@ impl Player {
         self.hand.append(&mut cards);
     }
 
-    fn points(&self) -> u32 {
-        todo!()
+    fn points(&self) -> u8 {
+        self.hand.iter().map(|c| c.point_value()).sum()
     }
 }
 
@@ -44,6 +45,30 @@ struct Card {
 impl Card {
     fn new (suit: Suit, name: Name) -> Self {
         Card { suit, name }
+    }
+
+    fn point_value(&self) -> u8 {
+        match self.name {
+            Name::Two => 2,
+            Name::Three => 3,
+            Name::Four => 4,
+            Name::Five => 5,
+            Name::Six => 6,
+            Name::Seven => 7,
+            Name::Eight => 8,
+            Name::Nine => 9,
+            Name::Ten => 10,
+            Name::Jack => 10,
+            Name::Queen => 10,
+            Name::King => 10,
+            Name::Ace(val) => val,
+        }
+    }
+}
+
+impl std::fmt::Display for Card {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} of {}", self.name, self.suit)
     }
 }
 
@@ -83,6 +108,28 @@ impl Name {
     }
 }
 
+impl std::fmt::Display for Name {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let name = match self {
+            Name::Two => "Two",
+            Name::Three => "Three",
+            Name::Four => "Four",
+            Name::Five => "Five",
+            Name::Six => "Six",
+            Name::Seven => "Seven",
+            Name::Eight => "Eight",
+            Name::Nine => "Nine",
+            Name::Ten => "Ten",
+            Name::Jack => "Jack",
+            Name::Queen => "Queen",
+            Name::King => "King",
+            Name::Ace(_) => "Ace",
+        };
+
+        write!(f, "{name}")
+    }
+}
+
 #[derive(Clone, Copy)]
 enum Suit {
     Diamonds,
@@ -102,6 +149,19 @@ impl Suit {
     }
 }
 
+impl std::fmt::Display for Suit {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let suit = match self {
+            Suit::Diamonds => "Diamonds",
+            Suit::Hearts => "Hearts",
+            Suit::Clubs => "Clubs",
+            Suit::Spades => "Spades",
+        };
+
+        write!(f, "{suit}")
+    }
+}
+
 fn make_deck() -> Vec<Card> { // TODO this could be much faster with iter and multithreading
     let mut deck = vec![];
 
@@ -114,13 +174,28 @@ fn make_deck() -> Vec<Card> { // TODO this could be much faster with iter and mu
     deck    
 }
 
+impl IsDeck<Card> for Vec<Card> {
+    fn random(&mut self) -> Card {
+        let random = my_random::random();
+
+        let length: f64 = (self.len()-1) as f64;
+
+        let index: usize = (random * length).floor() as usize;
+
+        self.swap_remove(index)
+    }
+}
+
 fn get_players() -> Vec<Player> {
     let mut players = vec![];
 
     loop {
         let input = helpers::user_input(Some("to add a user, enter a username\nto start, type 's'\n~"));
 
-        if input == "s" {break;}
+        if input == "s" {
+            if players.len() == 0 { println!("must have at least one player") }
+            else { break; }
+        }
 
         players.push( Player::new(input));
     }
@@ -135,12 +210,44 @@ fn players_turn(deck: &mut Vec<Card>, players: &mut Vec<Player>) {
     // loop until either:
     // everyones bust or everyones called, 
     loop {
+        let mut any_player_went = false;
         for player in &mut *players {
             // are they bust?
             if player.points() > 21 { continue; }
 
             // have they called?
             if player.called == true { continue; }
+
+            any_player_went = true;
+
+            println!("\nIt is {}s turn.", player.name);
+            let cards_vec: Vec<String> = player.hand.iter().map(|c| c.to_string()).collect();
+            let cards_str: String;
+            if cards_vec.len() == 0 {
+                cards_str = String::from("your hand is empty");
+            }
+            else {
+                cards_str = cards_vec.join(" ");
+            }
+            println!("you have {} point(s) and these cards in your hand:\n{}", player.points(), cards_str);
+            
+
+            // would you like a card or to call?
+            let choice = helpers::restricted_user_input(Some("call or hit?:"), vec!["call", "hit"]);
+            match choice.as_str() {
+                "call" => player.called = true,
+                "hit" => {
+                    let card = deck.random();
+                    let bust = if player.points() + card.point_value() > 21 { " you are bust!" } else {""};
+                    println!("You pulled the {card}{bust}");
+                    player.add_card(card);
+                },
+                _ => panic!("Somehow, helpers::restricted_user_input, did not work"),
+            }
+        }
+
+        if !any_player_went {
+            break
         }
     }
 }
