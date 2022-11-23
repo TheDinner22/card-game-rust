@@ -3,12 +3,19 @@ use card_game_rust::helpers;
 struct Player {
     name: String,
     money: i32,
-    hand: Vec<Card>
+
+    hand: Vec<Card>,
+    called: bool,
 }
 
 impl Player {
     fn new(name: String) -> Self {
-        Player { name, money: 100, hand: vec![] }
+        Player { name, money: 100, hand: vec![], called: false }
+    }
+
+    fn reset(&mut self) {
+        self.called = false;
+        self.clear_hand();
     }
 
     fn clear_hand(&mut self) {
@@ -21,6 +28,10 @@ impl Player {
 
     fn add_cards(&mut self, mut cards: Vec<Card>) {
         self.hand.append(&mut cards);
+    }
+
+    fn points(&self) -> u32 {
+        todo!()
     }
 }
 
@@ -117,18 +128,36 @@ fn get_players() -> Vec<Player> {
     players
 }
 
+fn players_turn(deck: &mut Vec<Card>, players: &mut Vec<Player>) {
+    // reset all players
+    players.iter_mut().for_each(|p| p.reset());
+
+    // loop until either:
+    // everyones bust or everyones called, 
+    loop {
+        for player in &mut *players {
+            // are they bust?
+            if player.points() > 21 { continue; }
+
+            // have they called?
+            if player.called == true { continue; }
+        }
+    }
+}
+
 fn main() { // TODO welcome msg
     // start the game (init stuff get players)
-    let _deck = make_deck();
-    let _players = get_players();
+    let mut deck = make_deck();
+    let mut players = get_players();
 
 
     // enter game loop
-    // loop {
-        // players turn
+    loop {
+        // players turn (loop through players over and over unit )
+        players_turn(&mut deck, &mut players);
 
         // dealers turn
 
         // money is distruted as needed
-    // }
+    }
 }
