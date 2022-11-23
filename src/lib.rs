@@ -17,6 +17,16 @@ pub mod helpers {
             return input.trim().to_string();
         }
     }
+
+    pub fn restricted_user_input(prompt: Option<&str>, ok_res: Vec<&str>) -> String { // todo this is done poorly
+        let ok_res_string: Vec<String> = ok_res.into_iter().map(|s| s.to_string()).collect();
+
+        loop {
+            let input = user_input(prompt);
+    
+            if ok_res_string.contains(&input) { return input; }
+        }
+    }
 }
 
 #[cfg(test)]
