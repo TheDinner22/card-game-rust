@@ -32,6 +32,12 @@ pub mod helpers {
     }
 }
 
+pub mod deck_trait {
+    pub trait IsDeck<T> { // todo blanket implement for Vec<T> cuz it just yoinks random element
+        fn random(&mut self) -> T;
+    }
+}
+
 #[cfg(test)]
 mod tests {
     #[test]
