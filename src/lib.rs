@@ -53,8 +53,10 @@ mod tests {
 
     #[test]
     fn random_in_range(){
-        assert!(my_random::random() >= 0.0 );
-        assert!(my_random::random() <= 1.0 );
+        for _ in 0..10000 {
+            assert!(my_random::random() >= 0.0 );
+            assert!(my_random::random() <= 1.0 );
+        }
     }
 
     #[test]
