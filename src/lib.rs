@@ -38,10 +38,29 @@ pub mod deck_trait {
     }
 }
 
+pub mod my_random {
+    use rand::prelude::*;
+
+    pub fn random() -> f64 { // random number from 0-1 inclusive
+        let mut rng = rand::thread_rng();
+        rng.gen()
+    }
+}
+
 #[cfg(test)]
 mod tests {
+    use super::my_random;
+
     #[test]
-    fn it_works(){
-        assert_eq!(1+1, 2);
+    fn random_in_range(){
+        assert!(my_random::random() >= 0.0 );
+        assert!(my_random::random() <= 1.0 );
+    }
+
+    #[test]
+    fn random_works(){
+        for _ in 0..10000 {
+            assert!(my_random::random() != my_random::random());
+        }
     }
 }
