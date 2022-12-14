@@ -256,23 +256,16 @@ fn dealers_turn(deck: &mut Vec<Card>) -> u8 {
     let mut dealer = Player::new("dealer".to_string());
 
     loop {
-        // are they bust?
-        if dealer.points() > 21 { break dealer.points(); }
+        // are they bust/have they called?
+        if dealer.points() > 21 || dealer.called == true {
+            println!("\nIt is the dealers turn!");
+            let cards_vec: Vec<String> = dealer.hand.iter().map(|c| c.to_string()).collect();
+            let cards_str = cards_vec.join("\n");
 
-        // have they called?
-        if dealer.called == true { break dealer.points(); }
+            println!("The dealer finished their turn with {} points and these cards in their hand:\n{}", dealer.points(), cards_str);
 
-        println!("\nIt is the dealers turn!");
-        let cards_vec: Vec<String> = dealer.hand.iter().map(|c| c.to_string()).collect();
-        let cards_str: String;
-        if cards_vec.len() == 0 {
-            cards_str = String::from("The dealer's hand is empty");
-        }
-        else {
-            cards_str = cards_vec.join(" ");
-        }
-        println!("The dealer has {} point(s) and these cards in your hand:\n{}", dealer.points(), cards_str);
-        
+            break dealer.points();
+        }        
 
         // will the dealer draw a card or to call?
         match dealer.points() {
