@@ -252,7 +252,7 @@ fn players_turn(deck: &mut Vec<Card>, players: &mut Vec<Player>) {
     }
 }
 
-fn dealers_turn(deck: &mut Vec<Card>) -> u8 {
+fn dealers_turn(deck: &mut Vec<Card>) -> Player {
     let mut dealer = Player::new("dealer".to_string());
 
     loop {
@@ -264,7 +264,7 @@ fn dealers_turn(deck: &mut Vec<Card>) -> u8 {
 
             println!("The dealer finished their turn with {} points and these cards in their hand:\n{}", dealer.points(), cards_str);
 
-            break dealer.points();
+            break dealer;
         }        
 
         // will the dealer draw a card or to call?
@@ -285,6 +285,19 @@ fn dealers_turn(deck: &mut Vec<Card>) -> u8 {
     }
 }
 
+fn decide_winners(players: &Vec<Player>, dealer: &Player) {
+    let dealer_points = dealer.points();
+    let winners: Vec<&Player> = players.iter().filter(|p| p.points() <=21 && p.points() > dealer_points).collect();
+
+    if winners.is_empty() {
+        println!("The dealer is the only winner here!")
+    }
+    else {
+        let winners_names: Vec<&str> = winners.into_iter().map(|p| p.name.as_str()).collect();
+        println!("These players won:\n{}", winners_names.join("\n"));
+    }
+}
+
 fn main() { // TODO welcome ms
     // NOTE would the deck eventually empty???
     // start the game (init stuff get players)
@@ -298,8 +311,10 @@ fn main() { // TODO welcome ms
         players_turn(&mut deck, &mut players);
 
         // dealers turn
-        let dealers_points = dealers_turn(&mut deck);
+        let dealer = dealers_turn(&mut deck);
 
-        // money is distruted as needed
+        // money is distruted as needed/ winner is decided
+        decide_winners(&players, &dealer);
+
     }
 }
