@@ -301,12 +301,14 @@ fn decide_winners(players: &Vec<Player>, dealer: &Player) {
 fn main() { // TODO welcome ms
     // NOTE would the deck eventually empty???
     // start the game (init stuff get players)
-    let mut deck = make_deck();
     let mut players = get_players();
-
-
+    
+    
     // enter game loop
     loop {
+        // create a new deck
+        let mut deck = make_deck();
+        
         // players turn (loop through players over and over unit )
         players_turn(&mut deck, &mut players);
 
@@ -315,6 +317,5 @@ fn main() { // TODO welcome ms
 
         // money is distruted as needed/ winner is decided
         decide_winners(&players, &dealer);
-
     }
 }
