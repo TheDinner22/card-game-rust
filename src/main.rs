@@ -289,9 +289,14 @@ fn decide_winners(players: &Vec<Player>, dealer: &Player) {
     let dealer_points = dealer.points();
     let winners: Vec<&Player> = players.iter().filter(|p| p.points() <=21 && p.points() > dealer_points).collect();
 
-    if winners.is_empty() {
+    if winners.is_empty() && dealer_points >= 21 {
+        println!("Their are no winners!!");
+    }
+    
+    else if winners.is_empty() {
         println!("The dealer is the only winner here!")
     }
+
     else {
         let winners_names: Vec<&str> = winners.into_iter().map(|p| p.name.as_str()).collect();
         println!("These players won:\n{}", winners_names.join("\n"));
