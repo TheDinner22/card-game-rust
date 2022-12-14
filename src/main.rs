@@ -227,7 +227,7 @@ fn players_turn(deck: &mut Vec<Card>, players: &mut Vec<Player>) {
                 cards_str = String::from("your hand is empty");
             }
             else {
-                cards_str = cards_vec.join(" ");
+                cards_str = cards_vec.join(", ");
             }
             println!("you have {} point(s) and these cards in your hand:\n{}", player.points(), cards_str);
             
@@ -252,7 +252,48 @@ fn players_turn(deck: &mut Vec<Card>, players: &mut Vec<Player>) {
     }
 }
 
-fn main() { // TODO welcome msg
+fn dealers_turn(deck: &mut Vec<Card>) -> u8 {
+    let mut dealer = Player::new("dealer".to_string());
+
+    loop {
+        // are they bust?
+        if dealer.points() > 21 { break dealer.points(); }
+
+        // have they called?
+        if dealer.called == true { break dealer.points(); }
+
+        println!("\nIt is the dealers turn!");
+        let cards_vec: Vec<String> = dealer.hand.iter().map(|c| c.to_string()).collect();
+        let cards_str: String;
+        if cards_vec.len() == 0 {
+            cards_str = String::from("The dealer's hand is empty");
+        }
+        else {
+            cards_str = cards_vec.join(" ");
+        }
+        println!("The dealer has {} point(s) and these cards in your hand:\n{}", dealer.points(), cards_str);
+        
+
+        // will the dealer draw a card or to call?
+        match dealer.points() {
+            0..=16 => {
+                // dealer hits
+                let card = deck.random();
+                let bust = if dealer.points() + card.point_value() > 21 { " the dealer is bust!" } else {""};
+                println!("The dealer pulled the {card}{bust}");
+                dealer.add_card(card);
+            },
+            17..=21 => {
+                // dealer calls
+                dealer.called = true
+            },
+            _ => panic!("this should never happen")
+        };
+    }
+}
+
+fn main() { // TODO welcome ms
+    // NOTE would the deck eventually empty???
     // start the game (init stuff get players)
     let mut deck = make_deck();
     let mut players = get_players();
@@ -264,6 +305,7 @@ fn main() { // TODO welcome msg
         players_turn(&mut deck, &mut players);
 
         // dealers turn
+        let dealers_points = dealers_turn(&mut deck);
 
         // money is distruted as needed
     }
