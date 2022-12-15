@@ -3,7 +3,7 @@ use card_game_rust::deck_trait::IsDeck;
 
 struct Player {
     name: String,
-    money: i32,
+    // money: i32,
 
     hand: Vec<Card>,
     called: bool,
@@ -11,7 +11,7 @@ struct Player {
 
 impl Player {
     fn new(name: String) -> Self {
-        Player { name, money: 100, hand: vec![], called: false }
+        Player { name, hand: vec![], called: false }
     }
 
     fn reset(&mut self) {
@@ -25,10 +25,6 @@ impl Player {
 
     fn add_card(&mut self, card: Card) {
         self.hand.push(card);
-    }
-
-    fn add_cards(&mut self, mut cards: Vec<Card>) {
-        self.hand.append(&mut cards);
     }
 
     fn points(&self) -> u8 {
@@ -265,7 +261,7 @@ fn dealers_turn(deck: &mut Vec<Card>) -> Player {
             println!("The dealer finished their turn with {} points and these cards in their hand:\n{}", dealer.points(), cards_str);
 
             break dealer;
-        }        
+        } 
 
         // will the dealer draw a card or to call?
         match dealer.points() {
